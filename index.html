@@ -43,7 +43,15 @@
             visibility: hidden; /* Initially hidden for GSAP animation */
         }
         .modal-backdrop {
-            background-color: rgba(0,0,0,0.7);
+            background-color: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: backdrop-filter 0.3s ease, background-color 0.3s ease;
+        }
+        
+        .modal-backdrop.hidden {
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
         }
         .flag-img {
             width: 32px;
@@ -500,21 +508,21 @@
                     <button id="close-modal" class="absolute top-4 right-4 text-gray-400 text-3xl hover:text-white transition-colors">&times;</button>
                     <div class="md:flex">
                         <div class="md:flex-shrink-0">
-                            <img class="rounded-l-lg h-full w-full object-cover md:w-64" src="${photoUrl}" alt="Foto de ${astronaut.nome}" onerror="this.onerror=null;this.src='https://placehold.co/600x600/1f2937/ffffff?text=Imagem+N%C3%A3o+Dispon%C3%ADvel';">
+                            <img class="modal-image rounded-l-lg h-full w-full object-cover md:w-64" src="${photoUrl}" alt="Foto de ${astronaut.nome}" onerror="this.onerror=null;this.src='https://placehold.co/600x600/1f2937/ffffff?text=Imagem+N%C3%A3o+Dispon%C3%ADvel';">
                         </div>
                         <div class="p-8">
                             <div class="flex items-center mb-4">
-                                <img src="${getCountryFlagUrl(astronaut.country_code)}" alt="Bandeira de ${astronaut.pais}" class="flag-img mr-3">
-                                <h2 class="text-3xl font-bold tracking-tight">${astronaut.nome}</h2>
+                                <img src="${getCountryFlagUrl(astronaut.country_code)}" alt="Bandeira de ${astronaut.pais}" class="modal-flag flag-img mr-3">
+                                <h2 class="modal-title text-3xl font-bold tracking-tight">${astronaut.nome}</h2>
                             </div>
                             <div class="text-gray-300 space-y-4">
-                                <div>
-                                    <h4 class="font-semibold text-lg text-blue-400">Currículo</h4>
-                                    <p>${astronaut.curriculo}</p>
+                                <div class="modal-section">
+                                    <h4 class="modal-section-title font-semibold text-lg text-blue-400">Currículo</h4>
+                                    <p class="modal-text">${astronaut.curriculo}</p>
                                 </div>
-                                <div>
-                                    <h4 class="font-semibold text-lg text-blue-400">Missões</h4>
-                                    <p>${astronaut.missoes}</p>
+                                <div class="modal-section">
+                                    <h4 class="modal-section-title font-semibold text-lg text-blue-400">Missões</h4>
+                                    <p class="modal-text">${astronaut.missoes}</p>
                                 </div>
                             </div>
                         </div>
@@ -524,11 +532,55 @@
                 modal.classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
 
+                // Reset all elements to initial state
+                gsap.set([".modal-image", ".modal-flag", ".modal-title", ".modal-section-title", ".modal-text"], {
+                    opacity: 0,
+                    y: 20
+                });
+
+                // Animate modal container first
                 gsap.to(modalContent, {
                     scale: 1,
                     opacity: 1,
                     duration: 0.4,
-                    ease: "power3.out"
+                    ease: "power3.out",
+                    onComplete: () => {
+                        // Sequential animation of elements
+                        const tl = gsap.timeline();
+                        
+                        tl.to(".modal-image", {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.5,
+                            ease: "power2.out"
+                        })
+                        .to(".modal-flag", {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.4,
+                            ease: "power2.out"
+                        }, "-=0.3")
+                        .to(".modal-title", {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.4,
+                            ease: "power2.out"
+                        }, "-=0.2")
+                        .to(".modal-section-title", {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.4,
+                            ease: "power2.out",
+                            stagger: 0.2
+                        }, "-=0.1")
+                        .to(".modal-text", {
+                            opacity: 1,
+                            y: 0,
+                            duration: 0.5,
+                            ease: "power2.out",
+                            stagger: 0.3
+                        }, "-=0.2");
+                    }
                 });
 
                 document.getElementById('close-modal').addEventListener('click', closeModal);
@@ -540,11 +592,22 @@
             }
 
             function closeModal() {
+                // Animate elements out first
+                gsap.to([".modal-image", ".modal-flag", ".modal-title", ".modal-section-title", ".modal-text"], {
+                    opacity: 0,
+                    y: -20,
+                    duration: 0.2,
+                    ease: "power2.in",
+                    stagger: 0.05
+                });
+                
+                // Then animate modal container
                 gsap.to(modalContent, {
                     scale: 0.95,
                     opacity: 0,
                     duration: 0.3,
                     ease: "power3.in",
+                    delay: 0.1,
                     onComplete: () => {
                         modal.classList.add('hidden');
                         document.body.style.overflow = '';
