@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Association of Space Explorers</title>
-    <script src="libs/tailwindcss/tailwind.min.css"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="libs/gsap/gsap.min.js"></script>
     <script src="libs/threejs/three.min.js"></script>
+    <script defer src="libs/alpinejs/alpine.min.js"></script>
     <link href="libs/fonts/inter.css" rel="stylesheet">
     <style>
         body {
@@ -52,6 +53,11 @@
         .modal-backdrop.hidden {
             backdrop-filter: blur(0px);
             -webkit-backdrop-filter: blur(0px);
+        }
+        
+        .modal-image, .modal-flag, .modal-title, .modal-section-title, .modal-text {
+            opacity: 0;
+            transform: translateY(20px);
         }
         .flag-img {
             width: 32px;
@@ -532,56 +538,51 @@
                 modal.classList.remove('hidden');
                 document.body.style.overflow = 'hidden';
 
-                // Reset all elements to initial state
-                gsap.set([".modal-image", ".modal-flag", ".modal-title", ".modal-section-title", ".modal-text"], {
-                    opacity: 0,
-                    y: 20
-                });
-
-                // Animate modal container first
+                // Animate modal container
                 gsap.to(modalContent, {
                     scale: 1,
                     opacity: 1,
                     duration: 0.4,
-                    ease: "power3.out",
-                    onComplete: () => {
-                        // Sequential animation of elements
-                        const tl = gsap.timeline();
-                        
-                        tl.to(".modal-image", {
-                            opacity: 1,
-                            y: 0,
-                            duration: 0.5,
-                            ease: "power2.out"
-                        })
-                        .to(".modal-flag", {
-                            opacity: 1,
-                            y: 0,
-                            duration: 0.4,
-                            ease: "power2.out"
-                        }, "-=0.3")
-                        .to(".modal-title", {
-                            opacity: 1,
-                            y: 0,
-                            duration: 0.4,
-                            ease: "power2.out"
-                        }, "-=0.2")
-                        .to(".modal-section-title", {
-                            opacity: 1,
-                            y: 0,
-                            duration: 0.4,
-                            ease: "power2.out",
-                            stagger: 0.2
-                        }, "-=0.1")
-                        .to(".modal-text", {
-                            opacity: 1,
-                            y: 0,
-                            duration: 0.5,
-                            ease: "power2.out",
-                            stagger: 0.3
-                        }, "-=0.2");
-                    }
+                    ease: "power3.out"
                 });
+
+                // Sequential animation of elements
+                setTimeout(() => {
+                    const tl = gsap.timeline();
+                    
+                    tl.to(".modal-image", {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.5,
+                        ease: "power2.out"
+                    })
+                    .to(".modal-flag", {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.4,
+                        ease: "power2.out"
+                    }, "-=0.3")
+                    .to(".modal-title", {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.4,
+                        ease: "power2.out"
+                    }, "-=0.2")
+                    .to(".modal-section-title", {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.4,
+                        ease: "power2.out",
+                        stagger: 0.2
+                    }, "-=0.1")
+                    .to(".modal-text", {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.5,
+                        ease: "power2.out",
+                        stagger: 0.3
+                    }, "-=0.2");
+                }, 100);
 
                 document.getElementById('close-modal').addEventListener('click', closeModal);
                 modal.addEventListener('click', (e) => {
