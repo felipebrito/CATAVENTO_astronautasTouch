@@ -285,6 +285,12 @@
             user-select: text;
         }
         
+        /* Configurações para teclado virtual */
+        #search-input {
+            font-size: 16px; /* Prevenir zoom no iOS */
+            -webkit-tap-highlight-color: rgba(59, 130, 246, 0.3);
+        }
+        
         /* Garantir que elementos clicáveis funcionem bem em touch */
         .card, .country-option, #country-dropdown, #search-input, #close-modal {
             touch-action: manipulation;
@@ -354,7 +360,7 @@
                 <div class="flex flex-col lg:flex-row gap-6 items-center">
                     <img src="logo.png" alt="ASE Logo" class="w-64 h-64 object-contain">
                     <div class="flex flex-col sm:flex-row gap-4 flex-1 w-full">
-                        <input type="text" id="search-input" placeholder="Buscar por nome..." class="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300">
+                        <input type="search" id="search-input" placeholder="Buscar por nome..." class="flex-1 px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" x-webkit-speech>
                         <div class="w-full sm:w-64 relative">
                             <div id="country-dropdown" class="w-full px-4 py-3 bg-gray-800/50 backdrop-blur-sm border border-gray-600/50 rounded-lg text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all duration-300 flex items-center justify-between">
                                 <span id="country-selected">Todos os Países</span>
@@ -1042,6 +1048,17 @@
 
             searchInput.addEventListener('input', filterAstronauts);
             countryDropdown.addEventListener('click', toggleCountryDropdown);
+            
+            // Configuração simples para teclado virtual em touch
+            searchInput.addEventListener('touchstart', function(e) {
+                // Permitir que o evento continue para ativar o teclado
+                this.focus();
+            });
+            
+            // Garantir foco quando clicado
+            searchInput.addEventListener('click', function() {
+                this.focus();
+            });
             
             // Close dropdown when clicking outside
             document.addEventListener('click', (e) => {

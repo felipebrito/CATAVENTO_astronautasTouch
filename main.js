@@ -78,6 +78,32 @@ function createWindow() {
         });
     }
 
+    // Configurações específicas para teclado virtual
+    mainWindow.webContents.on('did-finish-load', () => {
+        // Habilitar teclado virtual experimental
+        mainWindow.webContents.executeJavaScript(`
+            // Configurar teclado virtual
+            if ('virtualKeyboard' in navigator) {
+                navigator.virtualKeyboard.overlaysContent = true;
+            }
+            
+            // Garantir que inputs sejam focáveis em touch
+            document.addEventListener('DOMContentLoaded', function() {
+                const searchInput = document.getElementById('search-input');
+                if (searchInput) {
+                    searchInput.addEventListener('touchstart', function(e) {
+                        e.preventDefault();
+                        this.focus();
+                    });
+                    
+                    searchInput.addEventListener('click', function() {
+                        this.focus();
+                    });
+                }
+            });
+        `);
+    });
+
     // Atalho para sair (Ctrl+Alt+Q)
     const { globalShortcut } = require('electron');
     
